@@ -32,44 +32,44 @@ ALLSOURCEFILES += $(CFILES)
 # tüm kaynak dosyaları
 
 all: build/$(MAIN)
-	# ilk hedef ana executable dosya gereksinimi
+# ilk hedef ana executable dosya gereksinimi
 
 run: build/$(MAIN)
-	# Çalıştır hedefi executable dosyasının olmasını gerektirir
+# Çalıştır hedefi executable dosyasının olmasını gerektirir
 	@echo "Running..."
 	@./build/$(MAIN) makerun
-	# @ işareti çalışan komutu stdout'a yazılmasını engeller
+# @ işareti çalışan komutu stdout'a yazılmasını engeller
 	@echo ""
 
 debug: clean
-	# debug işlemi için programın sıfırdan inşaası gerekir
+# debug işlemi için programın sıfırdan inşaası gerekir
 	gdb build/$(MAIN)
-	# gdb programını çağır
+# gdb programını çağır
 
 build/$(MAIN): build build/archive.a src/main.cpp
-	# main.cpp dosyasını compile edip arşiv dosyası ile link et. Build dizini, ana arşiv dosyasını ve main.cpp dosyasını gerektirir
+# main.cpp dosyasını compile edip arşiv dosyası ile link et. Build dizini, ana arşiv dosyasını ve main.cpp dosyasını gerektirir
 	@echo "(C+) main.cpp archive.a -> build/$(MAIN)" 
 	@$(C+) $(CPFLAGS) -o build/$(MAIN) src/main.cpp build/archive.a $(INCLUDES) $(LIBS)
 
 build/archive.a: $(CPPOBJECTS) $(COBJECTS)
-	# ana arşiv dosyası tüm objeleri bir .a dosyasına birleştir c ve c++ objelerini gerektirir
+# ana arşiv dosyası tüm objeleri bir .a dosyasına birleştir c ve c++ objelerini gerektirir
 	@echo "(ar) $(CPPOBJECTS) $(COBJECTS)"
 	@ar rc build/archive.a $(CPPOBJECTS) $(COBJECTS) 
 
 build:
-	# build dizinini olştur
+# build dizinini olştur
 	@echo "(mkdir) build"
 	@mkdir -p build
 
 
 $(CPPOBJECTS): build/%.o: src/%
-	# cpp dosyalarını objelere compile et. Burada "build/%.o: src/%" objeleri kaynakları ile eşleştirmek için kullanılır.
+# cpp dosyalarını objelere compile et. Burada "build/%.o: src/%" objeleri kaynakları ile eşleştirmek için kullanılır.
 	@echo "(C+) $<"
 	@$(C+) $(CPPFLAGS) $(INCLUDES) -c $< -o $@
 
 
 $(COBJECTS): build/%.o: src/%
-	# cpp ile aynı. sadece c++ yerine c compiler çalışır
+# cpp ile aynı. sadece c++ yerine c compiler çalışır
 	@echo "(CC) $<"
 	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
@@ -78,13 +78,19 @@ clean: clear build/$(MAIN)
 # temiz build önce temizleyip sonra inşa etmeyi gerektirir
 
 clear:
-	#temizlemek için direk build dizinini sil
+#temizlemek için direk build dizinini sil
 	@echo "(rm) build"
-	@rm -r build
+	-@rm -r build
+	-@rm -r src/*.old
+# "-" işareti oluşan hataların buildi durdurmasını engeller
 
 format:
-	# clang-format ile Kodu düzenle $(join $(CPPFILES), $(CFILES))
-	$(foreach var,$(ALLSOURCEFILES), \
-		clang-format $(var) -style=file > $(var); \
+# clang-format ile $(ALLSOURCEFILES) dosyalarını düzenle 
+	@$(foreach var,$(ALLSOURCEFILES), \
+		echo "(format) $(var)"; \
+		clang-format $(var) -style=file > $(var).formatted; \
+		mv $(var) $(var).old; \
+		mv $(var).formatted $(var); \
+		\
 	)
-	
+	-@rm -r src/*.old

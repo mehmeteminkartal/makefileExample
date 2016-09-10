@@ -1,6 +1,6 @@
-#include <test.h>
+#include <test.h> // prototipleri dahil et
 
 
-void test() {
-	printf("Test Function \n");
+void test() { // test(void) fonksiyonu
+	printf("Test Function \n"); // "Test Function" yaz
 }

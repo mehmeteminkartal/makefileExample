@@ -29,6 +29,9 @@ debug: CPFLAGS += -g
 
 ALLSOURCEFILES = $(CPPFILES)
 ALLSOURCEFILES += $(CFILES)
+ALLSOURCEFILES += $(wildcard src/*.h)
+ALLSOURCEFILES += $(wildcard src/*.hpp)
+
 # tüm kaynak dosyaları
 
 all: build/$(MAIN)

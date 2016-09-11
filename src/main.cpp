@@ -9,7 +9,7 @@ int main() {			      // ana fonksiyon bloğu
 	printf("deneme\n");	   // deneme yaz
 	for (int i = 0; i < a; i++) { // a kere yap
 		test();		      // Test fonkesyonunu çağır
-		system("sleep 1");    // 1 saniye bekle
+		system("sleep 0.1");    // 100 milisaniye bekle
 	}
 	return 0; // bitti
 }

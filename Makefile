@@ -36,6 +36,19 @@ ALLSOURCEFILES += $(wildcard src/*.hpp)
 
 all: build/$(MAIN)
 # ilk hedef ana executable dosya gereksinimi
+.PHONY: all
+test: testBuild testRun testClean
+
+testBuild: build/$(MAIN)
+
+testRun:
+	@echo "(./build/$(MAIN)) Running..."
+	-@mkdir -p ./build/test/
+	-@./build/$(MAIN) makerun > ./build/test/output.txt
+	diff expectedOutput.txt ./build/test/output.txt
+	@echo "Test Complate"
+
+testClean: clear
 
 run: build/$(MAIN)
 # Çalıştır hedefi executable dosyasının olmasını gerektirir
@@ -77,15 +90,17 @@ $(COBJECTS): build/%.o: src/%
 	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 
+
 clean: clear build/$(MAIN)
 # temiz build önce temizleyip sonra inşa etmeyi gerektirir
-
+.PHONY: clear
 clear:
 #temizlemek için direk build dizinini sil
 	@echo "(rm) build"
-	-@rm -r build
-	-@rm -r src/*.old
+	-@rm -rf build
+	-@rm -rf src/*.old
 # "-" işareti oluşan hataların buildi durdurmasını engeller
+.PHONY: clean
 
 format:
 # clang-format ile $(ALLSOURCEFILES) dosyalarını düzenle 
